@@ -16,6 +16,7 @@ interface Subclient {
   type: string;
   relationshipType: string;
   company: string;
+  state: string;
   vaBalances: string;
 }
 
@@ -44,7 +45,7 @@ interface Subclient {
       <div class="filters-row">
         <mat-form-field appearance="outline" class="filter-field">
           <mat-label>ID</mat-label>
-          <mat-select [(ngModel)]="filters.id">
+          <mat-select [(ngModel)]="filters.id" (ngModelChange)="applyFilters()">
             <mat-option value="">All</mat-option>
             <mat-option value="381433">381433</mat-option>
             <mat-option value="64499">64499</mat-option>
@@ -53,12 +54,12 @@ interface Subclient {
 
         <mat-form-field appearance="outline" class="filter-field">
           <mat-label>Ext. Key</mat-label>
-          <input matInput [(ngModel)]="filters.extKey">
+          <input matInput [(ngModel)]="filters.extKey" (ngModelChange)="applyFilters()">
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="filter-field">
           <mat-label>State</mat-label>
-          <mat-select [(ngModel)]="filters.state">
+          <mat-select [(ngModel)]="filters.state" (ngModelChange)="applyFilters()">
             <mat-option value="">All</mat-option>
             <mat-option value="active">Active</mat-option>
             <mat-option value="inactive">Inactive</mat-option>
@@ -67,19 +68,19 @@ interface Subclient {
 
         <mat-form-field appearance="outline" class="filter-field">
           <mat-label>Relationship Type</mat-label>
-          <mat-select [(ngModel)]="filters.relationshipType">
+          <mat-select [(ngModel)]="filters.relationshipType" (ngModelChange)="applyFilters()">
             <mat-option value="">All</mat-option>
-            <mat-option value="customer">Customer</mat-option>
-            <mat-option value="beneficiary">Beneficiary</mat-option>
-            <mat-option value="affiliate">Affiliate</mat-option>
-            <mat-option value="root">Root</mat-option>
+            <mat-option value="Customer">Customer</mat-option>
+            <mat-option value="Beneficiary">Beneficiary</mat-option>
+            <mat-option value="Affiliate">Affiliate</mat-option>
+            <mat-option value="Root">Root</mat-option>
           </mat-select>
         </mat-form-field>
 
         <div class="right-controls">
           <mat-form-field appearance="outline" class="search-field">
             <mat-label>Search</mat-label>
-            <input matInput [(ngModel)]="filters.search">
+            <input matInput [(ngModel)]="filters.search" (ngModelChange)="applyFilters()">
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
 
@@ -102,7 +103,7 @@ interface Subclient {
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of subclients">
+            <tr *ngFor="let item of filteredSubclients">
               <td>{{ item.id }}</td>
               <td>{{ item.extKey }}</td>
               <td>{{ item.subClientName }}</td>
@@ -123,7 +124,7 @@ interface Subclient {
           <div class="pagination-left">
             <span>Items per page:</span>
             <mat-form-field appearance="outline" class="page-size-select">
-              <mat-select [(ngModel)]="pageSize">
+              <mat-select [(ngModel)]="pageSize" (ngModelChange)="applyFilters()">
                 <mat-option [value]="20">20</mat-option>
                 <mat-option [value]="50">50</mat-option>
                 <mat-option [value]="100">100</mat-option>
@@ -296,8 +297,9 @@ interface Subclient {
     .subclients-table th {
       text-align: left;
       padding: 10px 14px;
-      font-weight: 500;
+      font-weight: 600;
       font-size: 12px;
+      // font-weight:400:
       color: #666666;
       border-bottom: 1px solid #e0e0e0;
     }
@@ -314,6 +316,7 @@ interface Subclient {
     .subclients-table td {
       padding: 6px 14px;
       font-size: 12px;
+      font-weight:500;
       color: #333333;
       border-bottom: 1px solid #f0f0f0;
     }
@@ -455,6 +458,7 @@ interface Subclient {
   `]
 })
 export class SubclientsComponent {
+
   filters = {
     id: '',
     extKey: '',
@@ -465,14 +469,502 @@ export class SubclientsComponent {
 
   pageSize = 20;
 
-  subclients: Subclient[] = [
-    { id: '381433', extKey: 'XX XX XX 99 88', subClientName: 'Harry Chung', type: 'Business', relationshipType: 'Customer', company: 'Quanta Pay LLC', vaBalances: '$50.00' },
-    { id: '64499', extKey: 'XX XX XX 99 88', subClientName: 'Jane Sadwoman', type: 'Natural_Person', relationshipType: 'Beneficiary', company: 'FlyBit Pay LLC', vaBalances: 'NA' },
-    { id: '381433', extKey: 'XX XX XX 99 88', subClientName: 'Alex Goodsman', type: 'Natural_Person', relationshipType: 'Affiliate', company: 'Nova Pay LLC', vaBalances: '$50.00' },
-    { id: '64499', extKey: 'XX XX XX 99 88', subClientName: 'Kelsey Brittany', type: 'Business', relationshipType: 'Root', company: 'Movio Pay LLC', vaBalances: '$50.00' },
-    { id: '381433', extKey: 'XX XX XX 99 88', subClientName: 'Harry Chung', type: 'Business', relationshipType: 'Customer', company: 'Quanta Pay LLC', vaBalances: '$50.00' },
-    { id: '64499', extKey: 'XX XX XX 99 88', subClientName: 'Jane Sadwoman', type: 'Natural_Person', relationshipType: 'Beneficiary', company: 'FlyBit Pay LLC', vaBalances: 'NA' },
-    { id: '381433', extKey: 'XX XX XX 99 88', subClientName: 'Alex Goodsman', type: 'Natural_Person', relationshipType: 'Affiliate', company: 'Nova Pay LLC', vaBalances: '$50.00' },
-    { id: '64499', extKey: 'XX XX XX 99 88', subClientName: 'Kelsey Brittany', type: 'Business', relationshipType: 'Root', company: 'Movio Pay LLC', vaBalances: '$50.00' }
-  ];
+  /** ORIGINAL DATA */
+ subclients: Subclient[] = [
+  {
+    "id": "381433",
+    "extKey": "XX XX XX 99 88",
+    "subClientName": "Harry Chung",
+    "type": "Business",
+    "relationshipType": "Customer",
+    "company": "Quanta Pay LLC",
+    "state": "active",
+    "vaBalances": "$50.00"
+  },
+  {
+    "id": "64499",
+    "extKey": "XX XX XX 99 88",
+    "subClientName": "Jane Sadwoman",
+    "type": "Natural_Person",
+    "relationshipType": "Beneficiary",
+    "company": "FlyBit Pay LLC",
+    "state": "inactive",
+    "vaBalances": "NA"
+  },
+  {
+    "id": "381433",
+    "extKey": "XX XX XX 99 88",
+    "subClientName": "Alex Goodsman",
+    "type": "Natural_Person",
+    "relationshipType": "Affiliate",
+    "company": "Nova Pay LLC",
+    "state": "active",
+    "vaBalances": "$50.00"
+  },
+  {
+    "id": "64499",
+    "extKey": "XX XX XX 99 88",
+    "subClientName": "Kelsey Brittany",
+    "type": "Business",
+    "relationshipType": "Root",
+    "company": "Movio Pay LLC",
+    "state": "inactive",
+    "vaBalances": "$50.00"
+  },
+
+  /* ============= 46 MORE RANDOM GENERATED SUBCLIENTS ============= */
+
+  {
+    "id": "128900",
+    "extKey": "XX XX XX 23 11",
+    "subClientName": "Michael Foster",
+    "type": "Business",
+    "relationshipType": "Customer",
+    "company": "Fintron Pay Inc",
+    "state": "active",
+    "vaBalances": "$120.00"
+  },
+  {
+    "id": "560122",
+    "extKey": "XX XX XX 55 22",
+    "subClientName": "Sarah Green",
+    "type": "Natural_Person",
+    "relationshipType": "Beneficiary",
+    "company": "PayNest Solutions",
+    "state": "inactive",
+    "vaBalances": "NA"
+  },
+  {
+    "id": "789441",
+    "extKey": "XX XX XX 77 55",
+    "subClientName": "David Brown",
+    "type": "Business",
+    "relationshipType": "Affiliate",
+    "company": "BrightPay LTD",
+    "state": "active",
+    "vaBalances": "$80.00"
+  },
+  {
+    "id": "990122",
+    "extKey": "XX XX XX 44 32",
+    "subClientName": "Emily Watson",
+    "type": "Natural_Person",
+    "relationshipType": "Root",
+    "company": "TransPay Corp",
+    "state": "inactive",
+    "vaBalances": "$30.00"
+  },
+  {
+    "id": "110238",
+    "extKey": "XX XX XX 21 90",
+    "subClientName": "Chris Thompson",
+    "type": "Business",
+    "relationshipType": "Customer",
+    "company": "QuickFlow Pay LLC",
+    "state": "active",
+    "vaBalances": "$65.00"
+  },
+  {
+    "id": "812399",
+    "extKey": "XX XX XX 91 72",
+    "subClientName": "Laura Smith",
+    "type": "Natural_Person",
+    "relationshipType": "Beneficiary",
+    "company": "WavePay Industries",
+    "state": "inactive",
+    "vaBalances": "NA"
+  },
+  {
+    "id": "342091",
+    "extKey": "XX XX XX 63 41",
+    "subClientName": "Mark Johnson",
+    "type": "Natural_Person",
+    "relationshipType": "Affiliate",
+    "company": "Zentra Money Corp",
+    "state": "active",
+    "vaBalances": "$19.00"
+  },
+  {
+    "id": "903211",
+    "extKey": "XX XX XX 76 90",
+    "subClientName": "Olivia Benson",
+    "type": "Business",
+    "relationshipType": "Customer",
+    "company": "AlphaPay LLC",
+    "state": "active",
+    "vaBalances": "$210.00"
+  },
+  {
+    "id": "488321",
+    "extKey": "XX XX XX 48 48",
+    "subClientName": "Sophia Turner",
+    "type": "Business",
+    "relationshipType": "Affiliate",
+    "company": "CrediPay Global",
+    "state": "inactive",
+    "vaBalances": "$10.00"
+  },
+  {
+    "id": "192033",
+    "extKey": "XX XX XX 84 22",
+    "subClientName": "Daniel White",
+    "type": "Natural_Person",
+    "relationshipType": "Root",
+    "company": "MezzoPay Pvt Ltd",
+    "state": "active",
+    "vaBalances": "$70.00"
+  },
+  {
+    "id": "910122",
+    "extKey": "XX XX XX 12 45",
+    "subClientName": "Emma Davis",
+    "type": "Business",
+    "relationshipType": "Customer",
+    "company": "CrossPay Innovations",
+    "state": "active",
+    "vaBalances": "$55.00"
+  },
+  {
+    "id": "229411",
+    "extKey": "XX XX XX 55 91",
+    "subClientName": "James Carter",
+    "type": "Natural_Person",
+    "relationshipType": "Beneficiary",
+    "company": "FlowMatrix Corp",
+    "state": "inactive",
+    "vaBalances": "NA"
+  },
+  {
+    "id": "832910",
+    "extKey": "XX XX XX 32 87",
+    "subClientName": "Lucas Martin",
+    "type": "Business",
+    "relationshipType": "Affiliate",
+    "company": "SwiftMoney Services",
+    "state": "active",
+    "vaBalances": "$110.00"
+  },
+  {
+    "id": "453091",
+    "extKey": "XX XX XX 87 54",
+    "subClientName": "Isabella King",
+    "type": "Natural_Person",
+    "relationshipType": "Root",
+    "company": "RidgePay Systems",
+    "state": "inactive",
+       "vaBalances": "$40.00"
+  },
+  {
+    "id": "203944",
+    "extKey": "XX XX XX 29 12",
+    "subClientName": "William Scott",
+    "type": "Business",
+    "relationshipType": "Customer",
+    "company": "UniPay Global",
+    "state": "active",
+    "vaBalances": "$95.00"
+  },
+  {
+    "id": "673210",
+    "extKey": "XX XX XX 73 10",
+    "subClientName": "Lily Adams",
+    "type": "Natural_Person",
+    "relationshipType": "Beneficiary",
+    "company": "HexaPay Networks",
+    "state": "inactive",
+    "vaBalances": "NA"
+  },
+  {
+    "id": "998123",
+    "extKey": "XX XX XX 22 48",
+    "subClientName": "Henry Clark",
+    "type": "Business",
+    "relationshipType": "Affiliate",
+    "company": "PulsePay Corp",
+    "state": "active",
+    "vaBalances": "$130.00"
+  },
+  {
+    "id": "721033",
+    "extKey": "XX XX XX 90 11",
+    "subClientName": "Ava Lopez",
+    "type": "Natural_Person",
+    "relationshipType": "Root",
+    "company": "GranitePay Inc",
+    "state": "inactive",
+    "vaBalances": "$22.00"
+  },
+  {
+    "id": "550912",
+    "extKey": "XX XX XX 44 77",
+    "subClientName": "Ethan Walker",
+    "type": "Business",
+    "relationshipType": "Customer",
+    "company": "VantaPay Solutions",
+    "state": "active",
+    "vaBalances": "$90.00"
+  },
+  {
+    "id": "744100",
+    "extKey": "XX XX XX 33 66",
+    "subClientName": "Chloe Hill",
+    "type": "Natural_Person",
+    "relationshipType": "Beneficiary",
+    "company": "VaultPay Finance",
+    "state": "inactive",
+    "vaBalances": "NA"
+  },
+  {
+    "id": "600221",
+    "extKey": "XX XX XX 93 28",
+    "subClientName": "Jack Wilson",
+    "type": "Business",
+    "relationshipType": "Affiliate",
+    "company": "OrbitPay Group",
+    "state": "active",
+    "vaBalances": "$45.00"
+  },
+  {
+    "id": "433892",
+    "extKey": "XX XX XX 81 10",
+    "subClientName": "Evelyn Perez",
+    "type": "Natural_Person",
+    "relationshipType": "Root",
+    "company": "InfiniPay Services",
+    "state": "inactive",
+    "vaBalances": "$12.00"
+  },
+  {
+    "id": "551002",
+    "extKey": "XX XX XX 90 09",
+    "subClientName": "Aaron Garcia",
+    "type": "Business",
+    "relationshipType": "Customer",
+    "company": "OmniPay Corp",
+    "state": "active",
+    "vaBalances": "$155.00"
+  },
+  {
+    "id": "990432",
+    "extKey": "XX XX XX 02 88",
+    "subClientName": "Victoria Brooks",
+    "type": "Natural_Person",
+    "relationshipType": "Beneficiary",
+    "company": "SkyPay Digital",
+    "state": "inactive",
+    "vaBalances": "NA"
+  },
+  {
+    "id": "889321",
+    "extKey": "XX XX XX 12 66",
+    "subClientName": "Andrew Martinez",
+    "type": "Business",
+    "relationshipType": "Affiliate",
+    "company": "UltraPay Systems",
+    "state": "active",
+    "vaBalances": "$102.00"
+  },
+  {
+    "id": "233901",
+    "extKey": "XX XX XX 22 19",
+    "subClientName": "Grace Ramirez",
+    "type": "Natural_Person",
+    "relationshipType": "Root",
+    "company": "ZenPay Industries",
+    "state": "inactive",
+    "vaBalances": "$16.00"
+  },
+  {
+    "id": "432180",
+    "extKey": "XX XX XX 71 91",
+    "subClientName": "Benjamin Lewis",
+    "type": "Business",
+    "relationshipType": "Customer",
+    "company": "PentaPay Global",
+    "state": "active",
+    "vaBalances": "$62.00"
+  },
+  {
+    "id": "618231",
+    "extKey": "XX XX XX 88 18",
+    "subClientName": "Mia Moore",
+    "type": "Natural_Person",
+    "relationshipType": "Beneficiary",
+    "company": "EchoPay Network",
+    "state": "inactive",
+    "vaBalances": "NA"
+  },
+  {
+    "id": "289112",
+    "extKey": "XX XX XX 51 14",
+    "subClientName": "Leo Rivera",
+    "type": "Business",
+    "relationshipType": "Affiliate",
+    "company": "FleetPay Solutions",
+    "state": "active",
+    "vaBalances": "$115.00"
+  },
+  {
+    "id": "199022",
+    "extKey": "XX XX XX 93 87",
+    "subClientName": "Scarlett Ward",
+    "type": "Natural_Person",
+    "relationshipType": "Root",
+    "company": "PrimePay Fintech",
+    "state": "inactive",
+    "vaBalances": "$33.00"
+  },
+  {
+    "id": "300198",
+    "extKey": "XX XX XX 44 20",
+    "subClientName": "Nathan Cooper",
+    "type": "Business",
+    "relationshipType": "Customer",
+    "company": "NeonPay Tech",
+    "state": "active",
+    "vaBalances": "$200.00"
+  },
+  {
+    "id": "509922",
+    "extKey": "XX XX XX 08 12",
+    "subClientName": "Hannah Ortiz",
+    "type": "Natural_Person",
+    "relationshipType": "Beneficiary",
+    "company": "OmegaPay Inc",
+    "state": "inactive",
+    "vaBalances": "NA"
+  },
+  {
+    "id": "711009",
+    "extKey": "XX XX XX 22 00",
+    "subClientName": "Ryan Howard",
+    "type": "Business",
+    "relationshipType": "Affiliate",
+    "company": "FusionPay Labs",
+    "state": "active",
+    "vaBalances": "$134.00"
+  },
+  {
+    "id": "930221",
+    "extKey": "XX XX XX 77 32",
+    "subClientName": "Layla Morgan",
+    "type": "Natural_Person",
+    "relationshipType": "Root",
+    "company": "LinkPay Digital",
+    "state": "inactive",
+    "vaBalances": "$27.00"
+  },
+  {
+    "id": "600433",
+    "extKey": "XX XX XX 11 50",
+    "subClientName": "Jason Reed",
+    "type": "Business",
+    "relationshipType": "Customer",
+    "company": "CrystalPay Group",
+    "state": "active",
+    "vaBalances": "$84.00"
+  },
+  {
+    "id": "491230",
+    "extKey": "XX XX XX 65 89",
+    "subClientName": "Aria Jenkins",
+    "type": "Natural_Person",
+    "relationshipType": "Beneficiary",
+    "company": "BlueWave Pay",
+    "state": "inactive",
+    "vaBalances": "NA"
+  },
+  {
+    "id": "288190",
+    "extKey": "XX XX XX 94 99",
+    "subClientName": "Julian Foster",
+    "type": "Business",
+    "relationshipType": "Affiliate",
+    "company": "NextPay Tech Ltd",
+    "state": "active",
+    "vaBalances": "$108.00"
+  },
+  {
+    "id": "920044",
+    "extKey": "XX XX XX 73 19",
+    "subClientName": "Zoey Simmons",
+    "type": "Natural_Person",
+    "relationshipType": "Root",
+    "company": "NovaPay Digital",
+    "state": "inactive",
+    "vaBalances": "$19.00"
+  },
+  {
+    "id": "782011",
+    "extKey": "XX XX XX 42 31",
+    "subClientName": "Gabriel Price",
+    "type": "Business",
+    "relationshipType": "Customer",
+    "company": "VervePay Systems",
+    "state": "active",
+    "vaBalances": "$59.00"
+  },
+  {
+    "id": "577010",
+    "extKey": "XX XX XX 57 68",
+    "subClientName": "Ellie Scott",
+    "type": "Natural_Person",
+    "relationshipType": "Beneficiary",
+    "company": "FlowX Payment",
+    "state": "inactive",
+    "vaBalances": "NA"
+  },
+  {
+    "id": "344900",
+    "extKey": "XX XX XX 33 31",
+    "subClientName": "Owen Mitchell",
+    "type": "Business",
+    "relationshipType": "Affiliate",
+    "company": "JetPay Solutions",
+    "state": "active",
+    "vaBalances": "$125.00"
+  },
+  {
+    "id": "921008",
+    "extKey": "XX XX XX 12 56",
+    "subClientName": "Aubrey Rivera",
+    "type": "Natural_Person",
+    "relationshipType": "Root",
+    "company": "SunPay Corp",
+    "state": "inactive",
+    "vaBalances": "$20.00"
+  }
+];
+
+
+  /** FILTERED DATA */
+  filteredSubclients: Subclient[] = [];
+
+  ngOnInit() {
+    this.applyFilters();
+  }
+
+  /** MAIN FILTER FUNCTION */
+  applyFilters() {
+    const s = this.filters.search.toLowerCase();
+
+    this.filteredSubclients = this.subclients.filter(item => {
+      return (
+        (this.filters.id === '' || item.id === this.filters.id) &&
+        (this.filters.extKey === '' || item.extKey.toLowerCase().includes(this.filters.extKey.toLowerCase())) &&
+        (this.filters.state === '' || item.state === this.filters.state) &&
+        (this.filters.relationshipType === '' ||
+          item.relationshipType.toLowerCase() === this.filters.relationshipType.toLowerCase()
+        ) &&
+        (
+          s === '' ||
+          item.id.toLowerCase().includes(s) ||
+          item.subClientName.toLowerCase().includes(s) ||
+          item.company.toLowerCase().includes(s) ||
+          item.extKey.toLowerCase().includes(s) ||
+          item.relationshipType.toLowerCase().includes(s)
+        )
+      );
+    });
+  }
 }
