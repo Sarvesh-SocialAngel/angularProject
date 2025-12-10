@@ -319,11 +319,20 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
       overflow-y: auto;
       overflow-x: hidden;
       padding: 8px 0;
+      background-color: #fbfcfd;
     }
 
     .nav-content::-webkit-scrollbar {
       width: 6px;
     }
+    
+   ::ng-deep .mat-mdc-list-item.active {
+    // /* background: linear-gradient(90deg, #e3f2fd 0%, transparent 100%) !important; */
+    background:#f3f4f7 !important;
+    color: #1976d2 !important;
+    border-left: 3px solid #1976d2;
+    font-weight: 500;
+}
 
     .nav-content::-webkit-scrollbar-thumb {
       background: #e0e0e0;
@@ -362,14 +371,14 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     }
 
     ::ng-deep .mat-mdc-list-item.active {
-      background: linear-gradient(90deg, #e3f2fd 0%, transparent 100%) !important;
-      color: #1976d2 !important;
+      background: #f3f4f7;
+      color: #022d84 !important;
       border-left: 3px solid #1976d2;
       font-weight: 500;
     }
 
     ::ng-deep .mat-mdc-list-item.active .mat-icon {
-      color: #1976d2 !important;
+      color: #022d84 !important;
     }
 
     ::ng-deep .mat-mdc-list-item .mat-icon {
