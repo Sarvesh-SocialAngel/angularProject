@@ -1,19 +1,36 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './app';
+import { DashboardLayoutComponent } from './dashboard-layout.component';
+import { HomeComponent } from './home-page.component';
 import { BankDetailComponent } from './bank-detail.component';
 import { CreateSubclientsComponent } from './create-subclients.component';
+import { SubclientsListComponent } from './subclients-list.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: HomeComponent
+    redirectTo: '/dashboard',
+    pathMatch: 'full'
   },
   {
-    path: 'bank',
-    component: BankDetailComponent
-  },
-  {
-    path: 'create-subclients',
-    component: CreateSubclientsComponent
+    path: 'dashboard',
+    component: DashboardLayoutComponent,
+    children: [
+      {
+        path: '',
+        component: HomeComponent
+      },
+      {
+        path: 'bank',
+        component: BankDetailComponent
+      },
+      {
+        path: 'create-subclients',
+        component: CreateSubclientsComponent
+      },
+      {
+        path: 'sub-clients',
+        component: SubclientsListComponent
+      }
+    ]
   }
 ];
