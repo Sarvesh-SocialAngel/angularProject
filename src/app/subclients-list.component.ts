@@ -404,7 +404,7 @@ interface Subclient {
     ::ng-deep .pagination-right .mat-icon {
       font-size: 18px;
       width: 18px;
-      height: 18px;
+      height: 18px; 
     }
 
     /* FAB Button */
@@ -419,6 +419,7 @@ interface Subclient {
 
     ::ng-deep .add-fab .mat-icon {
       font-size: 24px;
+      color:white;
     }
 
     /* Responsive */

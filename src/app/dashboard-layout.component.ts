@@ -246,6 +246,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     .dashboard-container {
       height: 100vh;
       overflow: hidden;
+      font-family: Montserrat;
     }
 
     .sidenav-container {
@@ -329,9 +330,9 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
    ::ng-deep .mat-mdc-list-item.active {
     // /* background: linear-gradient(90deg, #e3f2fd 0%, transparent 100%) !important; */
     background:#f3f4f7 !important;
-    color: #1976d2 !important;
+    color: #022d84 !important;
     border-left: 3px solid #1976d2;
-    font-weight: 500;
+    font-weight: 700;
 }
 
     .nav-content::-webkit-scrollbar-thumb {
