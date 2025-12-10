@@ -40,22 +40,9 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
           <!-- Logo Section -->
           <div class="logo" [class.mini]="isTablet && !drawer.opened">
             <div class="logo-container">
-              <div class="logo-icon">
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                  <circle cx="20" cy="20" r="18" fill="url(#gradient)"/>
-                  <path d="M14 20h12M20 14v12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                  <defs>
-                    <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40">
-                      <stop offset="0%" stop-color="#1976d2"/>
-                      <stop offset="100%" stop-color="#1565c0"/>
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-              <div class="logo-text" *ngIf="!isTablet || drawer.opened">
-                <span class="logo-title">global</span>
-                <span class="logo-subtitle">innovations bank</span>
-              </div>
+             
+                <img src="/logo.png" alt="Logo" width="140" height="40" />
+              
             </div>
           </div>
 
@@ -63,7 +50,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
           <div class="nav-content">
             <!-- Overview Section -->
             <div class="nav-section">
-              <div class="nav-label" *ngIf="!isTablet || drawer.opened">OVERVIEW</div>
+              <!-- <div class="nav-label" *ngIf="!isTablet || drawer.opened">OVERVIEW</div> -->
               <mat-nav-list>
                 <a mat-list-item 
                    routerLink="/dashboard" 
@@ -84,13 +71,6 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
                   <mat-icon matListItemIcon>assignment</mat-icon>
                   <span matListItemTitle *ngIf="!isTablet || drawer.opened">Tasks</span>
                 </a>
-              </mat-nav-list>
-            </div>
-
-            <!-- Transactions Section -->
-            <div class="nav-section">
-              <div class="nav-label" *ngIf="!isTablet || drawer.opened">TRANSACTIONS & BATCHES</div>
-              <mat-nav-list>
                 <a mat-list-item 
                    routerLink="/dashboard/transactions" 
                    routerLinkActive="active"
@@ -100,13 +80,6 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
                   <mat-icon matListItemIcon>receipt_long</mat-icon>
                   <span matListItemTitle *ngIf="!isTablet || drawer.opened">Transactions</span>
                 </a>
-              </mat-nav-list>
-            </div>
-
-            <!-- Subledger Section -->
-            <div class="nav-section">
-              <div class="nav-label" *ngIf="!isTablet || drawer.opened">SUBLEDGER</div>
-              <mat-nav-list>
                 <a mat-list-item 
                    routerLink="/dashboard/sub-clients" 
                    routerLinkActive="active"
@@ -116,12 +89,6 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
                   <mat-icon matListItemIcon>group</mat-icon>
                   <span matListItemTitle *ngIf="!isTablet || drawer.opened">Sub Clients</span>
                 </a>
-              </mat-nav-list>
-            </div>
-
-            <!-- Settings Section -->
-            <div class="nav-section">
-              <mat-nav-list>
                 <a mat-list-item 
                    routerLink="/dashboard/profile" 
                    routerLinkActive="active"
@@ -142,6 +109,62 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
                 </a>
               </mat-nav-list>
             </div>
+
+            <!-- Transactions Section -->
+            <!-- <div class="nav-section">
+              <div class="nav-label" *ngIf="!isTablet || drawer.opened">TRANSACTIONS & BATCHES</div>
+              <mat-nav-list>
+                <a mat-list-item 
+                   routerLink="/dashboard/transactions" 
+                   routerLinkActive="active"
+                   [matTooltip]="(isTablet && !drawer.opened) ? 'Transactions' : ''"
+                   matTooltipPosition="right"
+                   (click)="onMenuItemClick()">
+                  <mat-icon matListItemIcon>receipt_long</mat-icon>
+                  <span matListItemTitle *ngIf="!isTablet || drawer.opened">Transactions</span>
+                </a>
+              </mat-nav-list>
+            </div> -->
+
+            <!-- Subledger Section -->
+            <!-- <div class="nav-section">
+              <div class="nav-label" *ngIf="!isTablet || drawer.opened">SUBLEDGER</div>
+              <mat-nav-list>
+                <a mat-list-item 
+                   routerLink="/dashboard/sub-clients" 
+                   routerLinkActive="active"
+                   [matTooltip]="(isTablet && !drawer.opened) ? 'Sub Clients' : ''"
+                   matTooltipPosition="right"
+                   (click)="onMenuItemClick()">
+                  <mat-icon matListItemIcon>group</mat-icon>
+                  <span matListItemTitle *ngIf="!isTablet || drawer.opened">Sub Clients</span>
+                </a>
+              </mat-nav-list>
+            </div> -->
+
+            <!-- Settings Section -->
+            <!-- <div class="nav-section">
+              <mat-nav-list>
+                <a mat-list-item 
+                   routerLink="/dashboard/profile" 
+                   routerLinkActive="active"
+                   [matTooltip]="(isTablet && !drawer.opened) ? 'Accounts' : ''"
+                   matTooltipPosition="right"
+                   (click)="onMenuItemClick()">
+                  <mat-icon matListItemIcon>account_circle</mat-icon>
+                  <span matListItemTitle *ngIf="!isTablet || drawer.opened">Accounts</span>
+                </a>
+                <a mat-list-item 
+                   routerLink="/dashboard/settings" 
+                   routerLinkActive="active"
+                   [matTooltip]="(isTablet && !drawer.opened) ? 'Settings' : ''"
+                   matTooltipPosition="right"
+                   (click)="onMenuItemClick()">
+                  <mat-icon matListItemIcon>settings</mat-icon>
+                  <span matListItemTitle *ngIf="!isTablet || drawer.opened">Settings</span>
+                </a>
+              </mat-nav-list>
+            </div> -->
           </div>
 
           <!-- Footer -->
@@ -181,7 +204,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
               </button>
               <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
                 <div class="avatar">A</div>
-                <span class="user-name" *ngIf="!isMobile">Alex</span>
+               
                 <mat-icon>expand_more</mat-icon>
               </button>
             </div>
@@ -247,7 +270,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
     /* Logo Styles */
     .logo {
-      padding: 20px 24px;
+      padding: 11px 24px;
       border-bottom: 1px solid #f0f0f0;
       transition: padding 0.3s;
     }
@@ -360,6 +383,14 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     ::ng-deep .sidebar.mini .mat-mdc-list-item .mat-icon {
       margin-right: 0 !important;
     }
+
+    ::ng-deep .mat-drawer-inner-container {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
 
     /* Footer Styles */
     .sidebar-footer {

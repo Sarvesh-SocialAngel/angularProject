@@ -105,7 +105,7 @@ import { Router } from '@angular/router';
   styles: [`
     .dashboard-home {
       max-width: 1400px;
-      margin: 0 auto;
+      margin: 40px auto;
     }
 
     h1 {
