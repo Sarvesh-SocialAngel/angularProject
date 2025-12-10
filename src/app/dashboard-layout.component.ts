@@ -1,12 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatBadgeModule } from '@angular/material/badge';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -19,84 +22,130 @@ import { MatMenuModule } from '@angular/material/menu';
     MatIconModule,
     MatButtonModule,
     MatToolbarModule,
-    MatMenuModule
+    MatMenuModule,
+    MatTooltipModule,
+    MatBadgeModule
   ],
   template: `
     <div class="dashboard-container">
-      <mat-sidenav-container class="sidenav-container">
-        <mat-sidenav mode="side" opened class="sidebar">
-          <div class="logo">
-            <img src="https://via.placeholder.com/150x40/1976d2/ffffff?text=GIB" alt="Global Innovations Bank">
+      <mat-sidenav-container class="sidenav-container" [hasBackdrop]="isMobile">
+        <!-- Sidebar -->
+        <mat-sidenav 
+          #drawer
+          [mode]="sidenavMode" 
+          [opened]="!isMobile"
+          class="sidebar"
+          [class.mini]="isTablet && !drawer.opened">
+          
+          <!-- Logo Section -->
+          <div class="logo" [class.mini]="isTablet && !drawer.opened">
+            <div class="logo-container">
+              <div class="logo-icon">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                  <circle cx="20" cy="20" r="18" fill="url(#gradient)"/>
+                  <path d="M14 20h12M20 14v12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                  <defs>
+                    <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40">
+                      <stop offset="0%" stop-color="#1976d2"/>
+                      <stop offset="100%" stop-color="#1565c0"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <div class="logo-text" *ngIf="!isTablet || drawer.opened">
+                <span class="logo-title">global</span>
+                <span class="logo-subtitle">innovations bank</span>
+              </div>
+            </div>
           </div>
 
-          <div class="nav-section">
-            <div class="nav-label">Overview</div>
-            <mat-nav-list>
-              <a mat-list-item routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-                <mat-icon matListItemIcon>dashboard</mat-icon>
-                <span matListItemTitle>Dashboard</span>
-              </a>
-              <a mat-list-item routerLink="/dashboard/tasks" routerLinkActive="active">
-                <mat-icon matListItemIcon>assignment</mat-icon>
-                <span matListItemTitle>Tasks</span>
-              </a>
-            </mat-nav-list>
+          <!-- Navigation Content -->
+          <div class="nav-content">
+            <!-- Overview Section -->
+            <div class="nav-section">
+              <div class="nav-label" *ngIf="!isTablet || drawer.opened">OVERVIEW</div>
+              <mat-nav-list>
+                <a mat-list-item 
+                   routerLink="/dashboard" 
+                   routerLinkActive="active" 
+                   [routerLinkActiveOptions]="{exact: true}"
+                   [matTooltip]="(isTablet && !drawer.opened) ? 'Dashboard' : ''"
+                   matTooltipPosition="right"
+                   (click)="onMenuItemClick()">
+                  <mat-icon matListItemIcon>dashboard</mat-icon>
+                  <span matListItemTitle *ngIf="!isTablet || drawer.opened">Dashboard</span>
+                </a>
+                <a mat-list-item 
+                   routerLink="/dashboard/tasks" 
+                   routerLinkActive="active"
+                   [matTooltip]="(isTablet && !drawer.opened) ? 'Tasks' : ''"
+                   matTooltipPosition="right"
+                   (click)="onMenuItemClick()">
+                  <mat-icon matListItemIcon>assignment</mat-icon>
+                  <span matListItemTitle *ngIf="!isTablet || drawer.opened">Tasks</span>
+                </a>
+              </mat-nav-list>
+            </div>
+
+            <!-- Transactions Section -->
+            <div class="nav-section">
+              <div class="nav-label" *ngIf="!isTablet || drawer.opened">TRANSACTIONS & BATCHES</div>
+              <mat-nav-list>
+                <a mat-list-item 
+                   routerLink="/dashboard/transactions" 
+                   routerLinkActive="active"
+                   [matTooltip]="(isTablet && !drawer.opened) ? 'Transactions' : ''"
+                   matTooltipPosition="right"
+                   (click)="onMenuItemClick()">
+                  <mat-icon matListItemIcon>receipt_long</mat-icon>
+                  <span matListItemTitle *ngIf="!isTablet || drawer.opened">Transactions</span>
+                </a>
+              </mat-nav-list>
+            </div>
+
+            <!-- Subledger Section -->
+            <div class="nav-section">
+              <div class="nav-label" *ngIf="!isTablet || drawer.opened">SUBLEDGER</div>
+              <mat-nav-list>
+                <a mat-list-item 
+                   routerLink="/dashboard/sub-clients" 
+                   routerLinkActive="active"
+                   [matTooltip]="(isTablet && !drawer.opened) ? 'Sub Clients' : ''"
+                   matTooltipPosition="right"
+                   (click)="onMenuItemClick()">
+                  <mat-icon matListItemIcon>group</mat-icon>
+                  <span matListItemTitle *ngIf="!isTablet || drawer.opened">Sub Clients</span>
+                </a>
+              </mat-nav-list>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="nav-section">
+              <mat-nav-list>
+                <a mat-list-item 
+                   routerLink="/dashboard/profile" 
+                   routerLinkActive="active"
+                   [matTooltip]="(isTablet && !drawer.opened) ? 'Accounts' : ''"
+                   matTooltipPosition="right"
+                   (click)="onMenuItemClick()">
+                  <mat-icon matListItemIcon>account_circle</mat-icon>
+                  <span matListItemTitle *ngIf="!isTablet || drawer.opened">Accounts</span>
+                </a>
+                <a mat-list-item 
+                   routerLink="/dashboard/settings" 
+                   routerLinkActive="active"
+                   [matTooltip]="(isTablet && !drawer.opened) ? 'Settings' : ''"
+                   matTooltipPosition="right"
+                   (click)="onMenuItemClick()">
+                  <mat-icon matListItemIcon>settings</mat-icon>
+                  <span matListItemTitle *ngIf="!isTablet || drawer.opened">Settings</span>
+                </a>
+              </mat-nav-list>
+            </div>
           </div>
 
-          <div class="nav-section">
-            <div class="nav-label">Transactions & Batches</div>
-            <mat-nav-list>
-              <a mat-list-item routerLink="/dashboard/batches" routerLinkActive="active">
-                <mat-icon matListItemIcon>science</mat-icon>
-                <span matListItemTitle>Batches</span>
-              </a>
-              <a mat-list-item routerLink="/dashboard/transactions" routerLinkActive="active">
-                <mat-icon matListItemIcon>receipt_long</mat-icon>
-                <span matListItemTitle>Transactions</span>
-              </a>
-            </mat-nav-list>
-          </div>
-
-          <div class="nav-section">
-            <div class="nav-label">Subledger</div>
-            <mat-nav-list>
-              <a mat-list-item routerLink="/dashboard/sub-transactions" routerLinkActive="active">
-                <mat-icon matListItemIcon>sync_alt</mat-icon>
-                <span matListItemTitle>Sub Transactions</span>
-              </a>
-              <a mat-list-item routerLink="/dashboard/sub-clients" routerLinkActive="active">
-                <mat-icon matListItemIcon>group</mat-icon>
-                <span matListItemTitle>Sub Clients</span>
-              </a>
-            </mat-nav-list>
-          </div>
-
-          <div class="nav-section">
-            <mat-nav-list>
-              <a mat-list-item routerLink="/dashboard/profile" routerLinkActive="active">
-                <mat-icon matListItemIcon>account_circle</mat-icon>
-                <span matListItemTitle>Profile</span>
-              </a>
-              <a mat-list-item routerLink="/dashboard/developers" routerLinkActive="active">
-                <mat-icon matListItemIcon>code</mat-icon>
-                <span matListItemTitle>Developers</span>
-              </a>
-              <a mat-list-item routerLink="/dashboard/settings" routerLinkActive="active">
-                <mat-icon matListItemIcon>settings</mat-icon>
-                <span matListItemTitle>Settings</span>
-              </a>
-              <a mat-list-item routerLink="/dashboard/tickets" routerLinkActive="active">
-                <mat-icon matListItemIcon>confirmation_number</mat-icon>
-                <span matListItemTitle>Raise Tickets</span>
-              </a>
-              <a mat-list-item routerLink="/dashboard/support" routerLinkActive="active">
-                <mat-icon matListItemIcon>help_outline</mat-icon>
-                <span matListItemTitle>Help & Support</span>
-              </a>
-            </mat-nav-list>
-          </div>
-
-          <div class="sidebar-footer">
+          <!-- Footer -->
+          <div class="sidebar-footer" *ngIf="!isTablet || drawer.opened">
             <div class="footer-text">Services Provided by</div>
             <div class="footer-company">Global Innovations Bank,</div>
             <div class="footer-text">Member FDIC</div>
@@ -104,37 +153,65 @@ import { MatMenuModule } from '@angular/material/menu';
               <a href="#">Trust Center</a> | <a href="#">Privacy Notice</a>
             </div>
           </div>
+
+          <!-- Mini Footer -->
+          <div class="sidebar-footer-mini" *ngIf="isTablet && !drawer.opened">
+            <mat-icon>info</mat-icon>
+          </div>
         </mat-sidenav>
 
+        <!-- Main Content -->
         <mat-sidenav-content>
-          <div class="top-bar">
-            <div class="top-bar-left">
-              <button mat-icon-button>
+          <!-- Top Bar -->
+          <mat-toolbar class="top-bar">
+            <button mat-icon-button 
+                    (click)="drawer.toggle()" 
+                    class="menu-toggle">
+              <mat-icon>{{ drawer.opened ? 'menu_open' : 'menu' }}</mat-icon>
+            </button>
+            
+            <span class="spacer"></span>
+            
+            <div class="top-bar-actions">
+              <button mat-icon-button class="icon-btn">
+                <mat-icon>search</mat-icon>
+              </button>
+              <button mat-icon-button class="icon-btn" [matBadge]="3" matBadgeColor="warn" matBadgeSize="small">
                 <mat-icon>notifications_none</mat-icon>
               </button>
-              <button mat-icon-button>
-                <mat-icon>event</mat-icon>
-              </button>
-              <span class="date">Nov 11</span>
-              <button mat-icon-button>
-                <mat-icon>tune</mat-icon>
-              </button>
-              <span class="test-label">Test</span>
-            </div>
-            <div class="top-bar-right">
               <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
                 <div class="avatar">A</div>
-                <span>Alex</span>
+                <span class="user-name" *ngIf="!isMobile">Alex</span>
                 <mat-icon>expand_more</mat-icon>
               </button>
-              <mat-menu #userMenu="matMenu">
-                <button mat-menu-item>Profile</button>
-                <button mat-menu-item>Settings</button>
-                <button mat-menu-item>Logout</button>
-              </mat-menu>
             </div>
-          </div>
+          </mat-toolbar>
 
+          <mat-menu #userMenu="matMenu" class="user-menu">
+            <div class="user-menu-header">
+              <div class="avatar large">A</div>
+              <div class="user-info">
+                <div class="user-name-large">Alex</div>
+                <div class="user-email">alex@globalbank.com</div>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+            <button mat-menu-item>
+              <mat-icon>person</mat-icon>
+              <span>Profile</span>
+            </button>
+            <button mat-menu-item>
+              <mat-icon>settings</mat-icon>
+              <span>Settings</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item>
+              <mat-icon>logout</mat-icon>
+              <span>Logout</span>
+            </button>
+          </mat-menu>
+
+          <!-- Page Content -->
           <div class="page-content">
             <router-outlet></router-outlet>
           </div>
@@ -150,52 +227,122 @@ import { MatMenuModule } from '@angular/material/menu';
 
     .sidenav-container {
       height: 100%;
+      background: #f5f7fa;
     }
 
+    /* Sidebar Styles */
     .sidebar {
-      width: 260px;
+      width: 280px;
       border-right: 1px solid #e0e0e0;
-      background: #fafafa;
+      background: white;
       display: flex;
       flex-direction: column;
-      padding: 0;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: visible;
     }
 
+    .sidebar.mini {
+      width: 72px;
+    }
+
+    /* Logo Styles */
     .logo {
       padding: 20px 24px;
-      border-bottom: 1px solid #e0e0e0;
+      border-bottom: 1px solid #f0f0f0;
+      transition: padding 0.3s;
     }
 
-    .logo img {
-      width: 150px;
-      height: auto;
+    .logo.mini {
+      padding: 20px 16px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.3;
+      overflow: hidden;
+    }
+
+    .logo-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1976d2;
+      text-transform: lowercase;
+    }
+
+    .logo-subtitle {
+      font-size: 12px;
+      font-weight: 500;
+      color: #424242;
+      text-transform: lowercase;
+    }
+
+    /* Navigation Styles */
+    .nav-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 8px 0;
+    }
+
+    .nav-content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .nav-content::-webkit-scrollbar-thumb {
+      background: #e0e0e0;
+      border-radius: 3px;
     }
 
     .nav-section {
-      padding: 16px 0;
+      margin-bottom: 24px;
     }
 
     .nav-label {
       font-size: 11px;
       font-weight: 600;
-      color: #999;
+      color: #9e9e9e;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 8px 24px;
+      letter-spacing: 0.5px;
+      padding: 12px 24px 8px;
+      white-space: nowrap;
+      overflow: hidden;
     }
 
+    /* List Item Styles */
     ::ng-deep .mat-mdc-list-item {
       height: 48px !important;
-      color: #666 !important;
+      color: #616161 !important;
+      border-radius: 0 !important;
+      transition: all 0.2s;
+    }
+
+    ::ng-deep .sidebar.mini .mat-mdc-list-item {
+      justify-content: center;
     }
 
     ::ng-deep .mat-mdc-list-item:hover {
-      background: #f0f0f0 !important;
+      background: #f5f5f5 !important;
     }
 
     ::ng-deep .mat-mdc-list-item.active {
-      background: #e3f2fd !important;
+      background: linear-gradient(90deg, #e3f2fd 0%, transparent 100%) !important;
       color: #1976d2 !important;
+      border-left: 3px solid #1976d2;
+      font-weight: 500;
     }
 
     ::ng-deep .mat-mdc-list-item.active .mat-icon {
@@ -203,26 +350,47 @@ import { MatMenuModule } from '@angular/material/menu';
     }
 
     ::ng-deep .mat-mdc-list-item .mat-icon {
-      color: #999 !important;
+      color: #9e9e9e !important;
       margin-right: 16px !important;
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
     }
 
+    ::ng-deep .sidebar.mini .mat-mdc-list-item .mat-icon {
+      margin-right: 0 !important;
+    }
+
+    /* Footer Styles */
     .sidebar-footer {
       margin-top: auto;
-      padding: 24px;
+      padding: 20px 24px;
       font-size: 11px;
-      color: #999;
-      border-top: 1px solid #e0e0e0;
+      color: #9e9e9e;
+      border-top: 1px solid #f0f0f0;
+      background: #fafafa;
+    }
+
+    .sidebar-footer-mini {
+      margin-top: auto;
+      padding: 20px;
+      text-align: center;
+      border-top: 1px solid #f0f0f0;
+      background: #fafafa;
+    }
+
+    .sidebar-footer-mini mat-icon {
+      color: #9e9e9e;
     }
 
     .footer-text {
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .footer-company {
       font-weight: 600;
-      color: #666;
-      margin-bottom: 4px;
+      color: #616161;
+      margin-bottom: 2px;
     }
 
     .footer-links {
@@ -232,62 +400,212 @@ import { MatMenuModule } from '@angular/material/menu';
     .footer-links a {
       color: #1976d2;
       text-decoration: none;
+      font-size: 11px;
     }
 
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* Top Bar Styles */
     .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 24px;
       background: white;
       border-bottom: 1px solid #e0e0e0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 0 16px;
+      height: 64px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
-    .top-bar-left {
+    .menu-toggle {
+      margin-right: 8px;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    .top-bar-actions {
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .top-bar-right {
-      display: flex;
-      align-items: center;
-    }
-
-    .date {
-      font-size: 14px;
-      color: #666;
-    }
-
-    .test-label {
-      font-size: 14px;
-      color: #666;
+    .icon-btn {
+      color: #616161;
     }
 
     .user-menu-btn {
       display: flex;
       align-items: center;
       gap: 8px;
+      padding: 4px 12px;
+      border-radius: 24px;
+      transition: background 0.2s;
+    }
+
+    .user-menu-btn:hover {
+      background: #f5f5f5;
     }
 
     .avatar {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: #1976d2;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 500;
+      font-weight: 600;
+      font-size: 14px;
     }
 
+    .avatar.large {
+      width: 48px;
+      height: 48px;
+      font-size: 18px;
+    }
+
+    .user-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #424242;
+    }
+
+    /* User Menu */
+    .user-menu-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name-large {
+      font-size: 16px;
+      font-weight: 600;
+      color: #212121;
+    }
+
+    .user-email {
+      font-size: 13px;
+      color: #757575;
+    }
+
+    /* Page Content */
     .page-content {
-      padding: 32px 48px;
-      background: #fafafa;
-      min-height: calc(100vh - 64px);
-      overflow-y: auto;
+    
+      margin: 0 auto;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Tablet - Mini Sidebar */
+    @media (min-width: 768px) and (max-width: 1024px) {
+      .sidebar:not(.mat-drawer-opened) {
+        width: 72px;
+      }
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .page-content {
+        padding: 16px;
+      }
+
+      .top-bar {
+        padding: 0 8px;
+        height: 56px;
+      }
+
+      .user-name {
+        display: none;
+      }
+    }
+
+    @media (max-width: 599px) {
+      .sidebar {
+        width: 280px;
+      }
+
+      .top-bar {
+        height: 56px;
+      }
+
+      .page-content {
+        padding: 12px;
+      }
     }
   `]
 })
-export class DashboardLayoutComponent {}
+export class DashboardLayoutComponent implements AfterViewInit {
+  @ViewChild('drawer') drawer!: MatSidenav;
+  
+  isMobile = false;
+  isTablet = false;
+  sidenavMode: 'side' | 'over' = 'side';
+
+  constructor(private breakpointObserver: BreakpointObserver) {
+    // Mobile detection
+    this.breakpointObserver.observe([Breakpoints.Handset])
+      .subscribe(result => {
+        this.isMobile = result.matches;
+        this.updateSidenavMode();
+        
+        // Auto-open on desktop, auto-close on mobile
+        if (this.drawer) {
+          if (this.isMobile) {
+            this.drawer.close();
+          } else {
+            this.drawer.open();
+          }
+        }
+      });
+
+    // Tablet detection
+    this.breakpointObserver.observe(['(min-width: 768px) and (max-width: 1024px)'])
+      .subscribe(result => {
+        this.isTablet = result.matches;
+        this.updateSidenavMode();
+        
+        // Keep open on tablet/desktop
+        if (this.drawer && !this.isMobile) {
+          this.drawer.open();
+        }
+      });
+  }
+
+  private updateSidenavMode() {
+    this.sidenavMode = this.isMobile ? 'over' : 'side';
+  }
+  
+  ngAfterViewInit() {
+    // Ensure correct initial state after view loads
+    setTimeout(() => {
+      if (this.drawer) {
+        if (this.isMobile) {
+          this.drawer.close();
+        } else {
+          this.drawer.open();
+        }
+      }
+    }, 0);
+  }
+  
+  onMenuItemClick() {
+    // Close drawer on mobile when menu item is clicked
+    if (this.isMobile && this.drawer) {
+      this.drawer.close();
+    }
+  }
+}

@@ -3,7 +3,7 @@ import { DashboardLayoutComponent } from './dashboard-layout.component';
 import { HomeComponent } from './home-page.component';
 import { BankDetailComponent } from './bank-detail.component';
 import { CreateSubclientsComponent } from './create-subclients.component';
-import { SubclientsListComponent } from './subclients-list.component';
+import { SubclientsComponent } from './subclients-list.component';
 
 export const routes: Routes = [
   {
@@ -29,7 +29,7 @@ export const routes: Routes = [
       },
       {
         path: 'sub-clients',
-        component: SubclientsListComponent
+        component: SubclientsComponent
       }
     ]
   }
